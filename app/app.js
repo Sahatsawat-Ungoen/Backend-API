@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import Stripe from "stripe";
 dotenv.config();
 import express from "express";
+import path from "path";
 import dbConnect from "../config/dbConnect.js";
 import { globalErrhandler, notFound } from "../middlewares/globalErrHandler.js";
 import brandsRouter from "../routes/brandsRouter.js";
@@ -81,7 +82,16 @@ app.post(
 
 //pass incoming data
 app.use(express.json());
+//url encoded
+app.use(express.urlencoded({ extended: true }));
+
+//Server static files
+app.use(express.static("public"));
 //routes
+//Home route
+app.get("/", (req, res) => {
+  res.sendFile(path.join("public", "index.html"));
+});
 app.use("/api/v1/users/", userRoutes);
 app.use("/api/v1/products/", productsRouter);
 app.use("/api/v1/categories/", categoriesRouter);
