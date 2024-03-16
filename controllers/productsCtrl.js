@@ -2,38 +2,40 @@ import asyncHandler from "express-async-handler";
 import Brand from "../model/Brand.js";
 import Category from "../model/Category.js";
 import Product from "../model/Product.js";
-//@desc Create new product
-//@route POST /api/v1/products
-//@access Private/Admin
+
+// @desc    Create new product
+// @route   POST /api/v1/products
+// @access  Private/Admin
 export const createProductCtrl = asyncHandler(async (req, res) => {
-  const convertedImgs = req.files.map((file) => file.path);
+  console.log(req.body);
   const { name, description, category, sizes, colors, price, totalQty, brand } =
     req.body;
+  const convertedImgs = req.files.map((file) => file?.path);
   //Product exists
   const productExists = await Product.findOne({ name });
   if (productExists) {
     throw new Error("Product Already Exists");
   }
-  //Find brand
+  //find the brand
   const brandFound = await Brand.findOne({
-    name: brand?.toLowerCase(),
+    name: "addidas",
   });
+
   if (!brandFound) {
     throw new Error(
-      "Brand not found,please create brand first or check brand name"
+      "Brand not found, please create brand first or check brand name"
     );
   }
-
-  //Find category
+  //find the category
   const categoryFound = await Category.findOne({
     name: category,
   });
   if (!categoryFound) {
     throw new Error(
-      "Category not found,please create category first or check category name"
+      "Category not found, please create category first or check category name"
     );
   }
-  //Create product
+  //create the product
   const product = await Product.create({
     name,
     description,
@@ -46,12 +48,11 @@ export const createProductCtrl = asyncHandler(async (req, res) => {
     brand,
     images: convertedImgs,
   });
-  //push product to category
+  //push the product into category
   categoryFound.products.push(product._id);
   //resave
   await categoryFound.save();
-
-  //push product to brand
+  //push the product into brand
   brandFound.products.push(product._id);
   //resave
   await brandFound.save();
@@ -63,10 +64,12 @@ export const createProductCtrl = asyncHandler(async (req, res) => {
   });
 });
 
-//@desc Get all products
-//@route GET /api/v1/products
-//@access Public
+// @desc    Get all products
+// @route   GET /api/v1/products
+// @access  Public
+
 export const getProductsCtrl = asyncHandler(async (req, res) => {
+  console.log(req.query);
   //query
   let productQuery = Product.find();
 
@@ -76,24 +79,28 @@ export const getProductsCtrl = asyncHandler(async (req, res) => {
       name: { $regex: req.query.name, $options: "i" },
     });
   }
+
   //filter by brand
   if (req.query.brand) {
     productQuery = productQuery.find({
       brand: { $regex: req.query.brand, $options: "i" },
     });
   }
+
   //filter by category
   if (req.query.category) {
     productQuery = productQuery.find({
       category: { $regex: req.query.category, $options: "i" },
     });
   }
+
   //filter by color
   if (req.query.color) {
     productQuery = productQuery.find({
       colors: { $regex: req.query.color, $options: "i" },
     });
   }
+
   //filter by size
   if (req.query.size) {
     productQuery = productQuery.find({
@@ -103,7 +110,7 @@ export const getProductsCtrl = asyncHandler(async (req, res) => {
   //filter by price range
   if (req.query.price) {
     const priceRange = req.query.price.split("-");
-    //gte: greater than or equal to
+    //gte: greater or equal
     //lte: less than or equal to
     productQuery = productQuery.find({
       price: { $gte: priceRange[0], $lte: priceRange[1] },
@@ -114,9 +121,9 @@ export const getProductsCtrl = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) ? parseInt(req.query.page) : 1;
   //limit
   const limit = parseInt(req.query.limit) ? parseInt(req.query.limit) : 10;
-  //startIndex
+  //startIdx
   const startIndex = (page - 1) * limit;
-  //endIndex
+  //endIdx
   const endIndex = page * limit;
   //total
   const total = await Product.countDocuments();
@@ -137,9 +144,9 @@ export const getProductsCtrl = asyncHandler(async (req, res) => {
       limit,
     };
   }
+
   //await the query
   const products = await productQuery.populate("reviews");
-
   res.json({
     status: "success",
     total,
@@ -150,13 +157,20 @@ export const getProductsCtrl = asyncHandler(async (req, res) => {
   });
 });
 
-//@desc Get single product
-//@route GET /api/v1/products/:id
-//@access Public
+// @desc    Get single product
+// @route   GET /api/products/:id
+// @access  Public
+
 export const getProductCtrl = asyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id).populate("reviews");
+  const product = await Product.findById(req.params.id).populate({
+    path: "reviews",
+    populate: {
+      path: "user",
+      select: "fullname",
+    },
+  });
   if (!product) {
-    throw new Error("Product not found");
+    throw new Error("Prouduct not found");
   }
   res.json({
     status: "success",
@@ -165,9 +179,10 @@ export const getProductCtrl = asyncHandler(async (req, res) => {
   });
 });
 
-//@desc Update product
-//@route PUT /api/v1/products/:id/update
-//@access Private/Admin
+// @desc    update  product
+// @route   PUT /api/products/:id/update
+// @access  Private/Admin
+
 export const updateProductCtrl = asyncHandler(async (req, res) => {
   const {
     name,
@@ -180,6 +195,8 @@ export const updateProductCtrl = asyncHandler(async (req, res) => {
     totalQty,
     brand,
   } = req.body;
+  //validation
+
   //update
   const product = await Product.findByIdAndUpdate(
     req.params.id,
@@ -196,6 +213,7 @@ export const updateProductCtrl = asyncHandler(async (req, res) => {
     },
     {
       new: true,
+      runValidators: true,
     }
   );
   res.json({
@@ -205,9 +223,9 @@ export const updateProductCtrl = asyncHandler(async (req, res) => {
   });
 });
 
-//@desc Delete product
-//@route DELETE /api/v1/products/:id/delete
-//@access Private/Admin
+// @desc    delete  product
+// @route   DELETE /api/products/:id/delete
+// @access  Private/Admin
 export const deleteProductCtrl = asyncHandler(async (req, res) => {
   await Product.findByIdAndDelete(req.params.id);
   res.json({

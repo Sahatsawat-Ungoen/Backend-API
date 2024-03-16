@@ -24,7 +24,7 @@ const OrderSchema = new Schema(
       type: String,
       default: randomTxt + randomNumbers,
     },
-    //For stripe payment
+    //for stripe payment
     paymentStatus: {
       type: String,
       default: "Not paid",
@@ -58,4 +58,5 @@ const OrderSchema = new Schema(
 
 //compile to form model
 const Order = mongoose.model("Order", OrderSchema);
+
 export default Order;

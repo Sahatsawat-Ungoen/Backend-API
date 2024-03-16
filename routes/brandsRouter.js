@@ -1,20 +1,21 @@
-import express from "express";
+import exppress from "express";
 import {
   createBrandCtrl,
+  deleteBrandCtrl,
   getAllBrandsCtrl,
   getSingleBrandCtrl,
   updateBrandCtrl,
-  deleteBrandCtrl,
 } from "../controllers/brandsCtrl.js";
 import isAdmin from "../middlewares/isAdmin.js";
+
 import { isLoggedIn } from "../middlewares/isLoggedIn.js";
 
-const brandsRouter = express.Router();
+const brandsRouter = exppress.Router();
 
 brandsRouter.post("/", isLoggedIn, isAdmin, createBrandCtrl);
 brandsRouter.get("/", getAllBrandsCtrl);
 brandsRouter.get("/:id", getSingleBrandCtrl);
-brandsRouter.put("/:id", isLoggedIn, isAdmin, updateBrandCtrl);
 brandsRouter.delete("/:id", isLoggedIn, isAdmin, deleteBrandCtrl);
+brandsRouter.put("/:id", isLoggedIn, isAdmin, updateBrandCtrl);
 
 export default brandsRouter;

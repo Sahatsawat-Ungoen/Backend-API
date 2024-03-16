@@ -9,7 +9,8 @@ export const globalErrhandler = (err, req, res, next) => {
     message,
   });
 };
-//404 Handler
+
+//404 handler
 export const notFound = (req, res, next) => {
   const err = new Error(`Route ${req.originalUrl} not found`);
   next(err);

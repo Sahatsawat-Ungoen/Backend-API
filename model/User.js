@@ -1,8 +1,7 @@
-//User Schema
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
-const UserSchema = new Schema(
+const UserShema = new Schema(
   {
     fullname: {
       type: String,
@@ -25,7 +24,7 @@ const UserSchema = new Schema(
     wishLists: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "wishList",
+        ref: "WishList",
       },
     ],
     isAdmin: {
@@ -67,7 +66,8 @@ const UserSchema = new Schema(
     timestamps: true,
   }
 );
-//Compile Schema to Model
-const User = mongoose.model("User", UserSchema);
+
+//compile the schema to model
+const User = mongoose.model("User", UserShema);
 
 export default User;

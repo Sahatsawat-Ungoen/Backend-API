@@ -2,19 +2,20 @@ import asyncHandler from "express-async-handler";
 import Product from "../model/Product.js";
 import Review from "../model/Review.js";
 
-//@desc Create new review
-//@route POST /api/v1/reviews
-//@access Private/Admin
+// @desc    Create new review
+// @route   POST /api/v1/reviews
+// @access  Private/Admin
+
 export const createReviewCtrl = asyncHandler(async (req, res) => {
   const { product, message, rating } = req.body;
-  //Find product
+  //1. Find the product
   const { productID } = req.params;
   const productFound = await Product.findById(productID).populate("reviews");
   if (!productFound) {
-    throw new Error("Product not found");
+    throw new Error("Product Not Found");
   }
   //check if user already reviewed this product
-  const hasReviewed = await productFound?.reviews?.find((review) => {
+  const hasReviewed = productFound?.reviews?.find((review) => {
     return review?.user?.toString() === req?.userAuthId?.toString();
   });
   if (hasReviewed) {
@@ -27,7 +28,7 @@ export const createReviewCtrl = asyncHandler(async (req, res) => {
     product: productFound?._id,
     user: req.userAuthId,
   });
-  //Push review into product found
+  //Push review into product Found
   productFound.reviews.push(review?._id);
   //resave
   await productFound.save();

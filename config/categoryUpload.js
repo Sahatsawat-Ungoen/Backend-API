@@ -1,4 +1,5 @@
 import cloudinaryPackage from "cloudinary";
+
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 
@@ -20,6 +21,6 @@ const storage = new CloudinaryStorage({
 });
 
 // Init Multer with the storage engine
-const categoryFileUpload = multer({ storage: storage });
+const catetgoryFileUpload = multer({ storage: storage });
 
-export default categoryFileUpload;
+export default catetgoryFileUpload;

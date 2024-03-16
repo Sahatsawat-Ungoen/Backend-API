@@ -1,5 +1,5 @@
-import express from "express";
-import categoryFileUpload from "../config/categoryUpload.js";
+import exppress from "express";
+import catetgoryFileUpload from "../config/categoryUpload.js";
 import {
   createCategoryCtrl,
   getAllCategoriesCtrl,
@@ -9,17 +9,16 @@ import {
 } from "../controllers/categoriesCtrl.js";
 import { isLoggedIn } from "../middlewares/isLoggedIn.js";
 
-const categoriesRouter = express.Router();
+const categoriesRouter = exppress.Router();
 
 categoriesRouter.post(
   "/",
   isLoggedIn,
-  categoryFileUpload.single("file"),
+  catetgoryFileUpload.single("file"),
   createCategoryCtrl
 );
 categoriesRouter.get("/", getAllCategoriesCtrl);
 categoriesRouter.get("/:id", getSingleCategoryCtrl);
-categoriesRouter.put("/:id", updateCategoryCtrl);
 categoriesRouter.delete("/:id", deleteCategoryCtrl);
-
+categoriesRouter.put("/:id", updateCategoryCtrl);
 export default categoriesRouter;
