@@ -27,7 +27,7 @@ const stripe = new Stripe(process.env.STRIPE_KEY);
 
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
 const endpointSecret =
-   "whsec_a877d13adcb5f48f41d3776164e0b70bab6826a979d1a57b7fc4082fe13ab6c3";
+  "whsec_a877d13adcb5f48f41d3776164e0b70bab6826a979d1a57b7fc4082fe13ab6c3";
 
 app.post(
   "/webhook",
@@ -70,16 +70,16 @@ app.post(
     } else {
       return;
     }
-    // // Handle the event
-    // switch (event.type) {
-    //   case "payment_intent.succeeded":
-    //     const paymentIntent = event.data.object;
-    //     // Then define and call a function to handle the event payment_intent.succeeded
-    //     break;
-    //   // ... handle other event types
-    //   default:
-    //     console.log(`Unhandled event type ${event.type}`);
-    // }
+    // Handle the event
+    switch (event.type) {
+      case "payment_intent.succeeded":
+        const paymentIntent = event.data.object;
+        // Then define and call a function to handle the event payment_intent.succeeded
+        break;
+      // ... handle other event types
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+    }
     // Return a 200 response to acknowledge receipt of the event
     response.send();
   }
